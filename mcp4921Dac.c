@@ -83,7 +83,11 @@ void dacSet(double vOut, double vRef, int nBits){
     unsigned int dacCtrl = (~DAC_CFG_WR & ~DAC_CFG_BUF & (DAC_CFG_GA + DAC_CFG_SHDN)) & 0xF000;
     unsigned int byteCode;
 
-    byteCode = (vOut * pow(2, nBits))/vRef;
+    if (vOut >= vRef){
+        dacCtrl &= ~DAC_CFG_GA;
+        byteCode = ((vOut/2) * pow(2, nBits))/vRef;
+    } else
+        byteCode = (vOut * pow(2, nBits))/vRef;
 
     dacWriteWord(ceil(byteCode), dacCtrl);
 }

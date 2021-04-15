@@ -10,7 +10,7 @@
 
 #define     MAX_CMDS             3
 
-#define     CMD0                 "DacSet"
+#define     CMD0                 "DACSET"
 #define     CMD0_NARGS           1
 #define     DACSET_IDX         0
 
