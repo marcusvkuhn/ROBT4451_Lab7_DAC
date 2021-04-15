@@ -35,16 +35,16 @@ int main(void) {
 	//unsigned int *address = (unsigned int*)0x2400;
 	unsigned char oscFail = 1;
 	//unsigned int dacWord = 0;
-	unsigned int dacCtrl = (~DAC_CFG_WR & ~DAC_CFG_BUF & (DAC_CFG_GA + DAC_CFG_SHDN)) & 0xF000;
+//	unsigned int dacCtrl = (~DAC_CFG_WR & ~DAC_CFG_BUF & (DAC_CFG_GA + DAC_CFG_SHDN)) & 0xF000;
 								// count direction
     WDTCTL = WDTPW | WDTHOLD;					// Stop watchdog timer
 
     /*********Set clock frequency*********************************************/
     //unsigned char testPass = 1;
-//    ucsSelSource(1,1,1,1);
-//    oscFail = ucsDcoFreqSet (dcoFreq, 2, 1);			//set sclk to dcoFreq
-//    if (oscFail)
-//    	return 1;
+    ucsSelSource(1,1,1,1);
+    oscFail = ucsDcoFreqSet (dcoFreq, 2, 1);			//set sclk to dcoFreq
+    if (oscFail)
+    	return 1;
     /***End***Set clock frequency*********************************************/
 
     usciA0SpiInit(sclkDiv);
