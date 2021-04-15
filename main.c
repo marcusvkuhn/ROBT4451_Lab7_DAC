@@ -13,11 +13,14 @@
 
 
 #include <msp430.h> 
-#include <usciSpi.h>
+
+#include "usciSpi.h"
 #include "ucsControl.h"
 #include "mcp4921Dac.h"
 #include "cmdDac.h"
 #include "usciUart.h"
+#include "waveformGenerator.h"
+#include "timerA0.h"
 
 #define dcoFreq 20							//MHz.
 #define sclkDiv 1							//SPI sclk divide. SCLK MAX to the DAC is 20MHz.
@@ -33,7 +36,7 @@ unsigned char rxFlag = 0;
 int main(void) {
 
 	//unsigned int *address = (unsigned int*)0x2400;
-	unsigned char oscFail = 1;
+	//unsigned char oscFail = 1;
 	//unsigned int dacWord = 0;
 //	unsigned int dacCtrl = (~DAC_CFG_WR & ~DAC_CFG_BUF & (DAC_CFG_GA + DAC_CFG_SHDN)) & 0xF000;
 								// count direction
@@ -41,10 +44,10 @@ int main(void) {
 
     /*********Set clock frequency*********************************************/
     //unsigned char testPass = 1;
-    ucsSelSource(1,1,1,1);
-    oscFail = ucsDcoFreqSet (dcoFreq, 2, 1);			//set sclk to dcoFreq
-    if (oscFail)
-    	return 1;
+//    ucsSelSource(1,1,1,1);
+//    oscFail = ucsDcoFreqSet (dcoFreq, 2, 1);			//set sclk to dcoFreq
+//    if (oscFail)
+//    	return 1;
     /***End***Set clock frequency*********************************************/
 
     usciA0SpiInit(sclkDiv);
@@ -64,6 +67,11 @@ int main(void) {
     UCA0IE |= (UCRXIE);						// enable RXIFG interrupt
 
     __enable_interrupt();      				// enable global device interrupts
+
+    timerA0Init();
+    triWave(2.3,200,100);
+
+    triangularWaveDac();
 
     CMD dacCmds[MAX_CMDS]; //this is an array of vnh7070Cmds of type CMD
     initDacCmds(dacCmds);
