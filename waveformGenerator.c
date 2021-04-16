@@ -32,33 +32,54 @@ int triWave(double amp, double freq, int nSamples){
     unsigned int dacCtrl = (~DAC_CFG_WR & ~DAC_CFG_BUF & (DAC_CFG_GA + DAC_CFG_SHDN)) & 0xF000;
     volatile int validTriWave = 1;
     unsigned int byteAmp;
-    unsigned int i;
-    volatile double timerSample;
+    unsigned int i, j;
+    volatile double timerSample,
+                    nSamplesT,
+                    deltaAmp;
+    volatile double nSampleVoltage[150] = {};
+    volatile unsigned int nSampleByte[150] = {};
+
+
 
     if (amp > 2.5)
         validTriWave = 0;
 
-    byteAmp = (amp * 4096)/V_REF;
 
-    timerSample = 1/(nSamples*freq);
+//    byteAmp = (amp * 4096)/V_REF;
+//
+//    timerSample = 1/(nSamples*freq);
+//
 
-    timerSample = timerSample / SMCLK_T;
+
+    nSamplesT = (1/(freq*nSamples));
+
+    deltaAmp = (amp/nSamples)*2;
+
+    timerSample = nSamplesT / SMCLK_T;
 
     TA0CCR0 =  (int)timerSample + 1;
+
+    for (i = 0; i <= nSamples/2; ++i){
+            nSampleVoltage[i] = deltaAmp * i;
+            nSampleByte[i] = (nSampleVoltage[i] * 4096)/V_REF;
+    }
+    for (i, j = 1; i < nSamples; ++i, ++j) {
+        nSampleVoltage[i] = amp - (deltaAmp * j);
+        nSampleByte[i] = (nSampleVoltage[i] * 4096)/V_REF;
+    }
+
+    i = 0 ;
+
     TA0CTL |= TACLR | TAIE;
 
     while(1){
-        for (i = 0; i < byteAmp; ++i) {
-            if (sampleT){
-                dacWriteWord(i, dacCtrl);
-                sampleT = 0;
-            }
-        }
-        for (i = byteAmp; i != 0; --i) {
-            if (sampleT){
-                dacWriteWord(i, dacCtrl);
-                sampleT = 0;
-            }
+        if (i > nSamples)
+            i = 0;
+        if (sampleT){
+            dacWriteWord(nSampleByte[i++], dacCtrl);
+            sampleT = 0;
         }
     }
+
+    return validTriWave;
 }
