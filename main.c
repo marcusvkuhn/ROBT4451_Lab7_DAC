@@ -26,7 +26,7 @@
 #define sclkDiv 1							//SPI sclk divide. SCLK MAX to the DAC is 20MHz.
 											// sclkDiv will slow down transfer rate to DAC
 
-#define DAC_TST_WORD 0x800
+#define DAC_TST_WORD 0xBF8
 
 /*
  * main.c
@@ -36,9 +36,9 @@ unsigned char rxFlag = 0;
 int main(void) {
 
 	//unsigned int *address = (unsigned int*)0x2400;
-	//unsigned char oscFail = 1;
-	//unsigned int dacWord = 0;
-//	unsigned int dacCtrl = (~DAC_CFG_WR & ~DAC_CFG_BUF & (DAC_CFG_GA + DAC_CFG_SHDN)) & 0xF000;
+	unsigned char oscFail = 1;
+//	unsigned int dacWord = 0;
+	unsigned int dacCtrl = (~DAC_CFG_WR & ~DAC_CFG_BUF & (DAC_CFG_GA + DAC_CFG_SHDN)) & 0xF000;
 								// count direction
     WDTCTL = WDTPW | WDTHOLD;					// Stop watchdog timer
 
@@ -69,7 +69,7 @@ int main(void) {
     __enable_interrupt();      				// enable global device interrupts
 
     timerA0Init();
-    triWave(2.3,200,100);
+    triWave(2.5,100,20);
 
     triangularWaveDac();
 
@@ -94,9 +94,9 @@ int main(void) {
         } while (cmdIndex != QUIT_IDX);
 
 
-//    while(1){
-//    	dacWriteWord(DAC_TST_WORD, dacCtrl);		// just write 0x800 to DAC. over and over and over again ...
-//    }
+    while(1){
+    	dacWriteWord(DAC_TST_WORD, dacCtrl);		// just write 0x800 to DAC. over and over and over again ...
+    }
 
     __disable_interrupt();					// disable global interrupts
 	return 0;

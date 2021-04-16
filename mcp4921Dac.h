@@ -9,7 +9,7 @@
 #define MCP4921DAC_H_
 
 #define CS 	 BIT0							// active LOW CS
-#define LDAC BIT2							// active LOW LDAC
+#define LDAC BIT1							// active LOW LDAC
 #define LDAC_B_ASSERT   P4OUT &= ~LDAC;		// active LOW LDAC_B assertion
 #define LDAC_B_DEASSERT P4OUT |=  LDAC;
 #define CS_B_ASSERT   P4OUT &= ~CS;			// active LOW CS_B assertion
