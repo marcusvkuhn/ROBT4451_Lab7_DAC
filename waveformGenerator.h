@@ -10,7 +10,7 @@
 
 #define V_REF 2.50061
 #define SMCLK_T 0.000000954
-
+#define PI 3.14159265359
 
 void triangularWaveDac(void);
 

@@ -19,6 +19,10 @@
 void initDacCmds(CMD* dacCmds){
     dacCmds[0].name = CMD0;        // initialize the first command name
     dacCmds[0].nArgs = CMD0_NARGS; // initialize num of arguments in first command
+    dacCmds[1].name = CMD1;
+    dacCmds[1].nArgs = CMD1_NARGS;
+    dacCmds[2].name = CMD2;
+    dacCmds[2].nArgs = CMD2_NARGS;
 }
 
 /************************************************************************************
@@ -60,17 +64,25 @@ int parseCmd(CMD* dacCmds, char* cmdLine){
                 if (token)     // if there is more than one argument, function will also return -1
                     cmdIndex = -1;
         }
-//        if (cmdIndex == SCRNLINE_IDX || cmdIndex == DRAWLINE_IDX){      // for nokLcdDrawScrnLine, nArgs = 2, for nokLcdDrawLine, nArgs = 4
-//            for (i = 0; token && i < dacCmds[cmdIndex].nArgs; ++i){      // loops while token is valid and i is less than the nArgs for the command, same for every following for-loop
-//                token = strtok(NULL, DELIM);
-//                if (token)                                              // every following token here will be a double
-//                    NOK_ARG[i] = atoi(token);            // converts to int, then stores into the array
-//                else if (!token)                // token invalid in the range of nArgs
-//                    cmdIndex = -1;
-//            }
-//            if (token = strtok(NULL, DELIM))     // looks for more than nArgs arguments, which will also make the function return -1
-//                cmdIndex = -1;
-//        }
+        if (cmdIndex == TRIWAVE_IDX || cmdIndex == SINWAVE_IDX){      // for nokLcdDrawScrnLine, nArgs = 2, for nokLcdDrawLine, nArgs = 4
+            for (i = 0; token && i < dacCmds[cmdIndex].nArgs; ++i){      // loops while token is valid and i is less than the nArgs for the command, same for every following for-loop
+                token = strtok(NULL, DELIM);
+                if (i == CMD2_NARGS - 1){
+                    if (token)                                              // every following token here will be a double
+                        DAC_ARG[i] = atoi(token);            // converts to int, then stores into the array
+                    else if (!token)                // token invalid in the range of nArgs
+                        cmdIndex = -1;
+                }
+                else{
+                    if (token)                                              // every following token here will be a double
+                        DAC_ARG[i] = atof(token);            // converts to int, then stores into the array
+                    else if (!token)                // token invalid in the range of nArgs
+                        cmdIndex = -1;
+                }
+            }
+            if (token = strtok(NULL, DELIM))     // looks for more than nArgs arguments, which will also make the function return -1
+                cmdIndex = -1;
+        }
     }
     return cmdIndex;
 }
@@ -115,6 +127,10 @@ int executeCMD(CMD* dacCmds, int cmdIndex){
     switch (cmdIndex) {
     case DACSET_IDX:
         dacSet(DAC_ARG[0], VREF, N_BITS);
+    case TRIWAVE_IDX:
+        triWave(DAC_ARG[0], DAC_ARG[1], DAC_ARG[2]);
+    case SINWAVE_IDX:
+        sinWave(DAC_ARG[0], DAC_ARG[1], DAC_ARG[2]);
     default:
         break;
     }
