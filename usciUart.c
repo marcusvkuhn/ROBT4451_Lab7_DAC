@@ -45,8 +45,8 @@ void usciA1UartInit(){
 				&	~UCSPB			// 1 stop bit
 				&	~UCSYNC;		// UART Mode
 
-	//UCA1BR0 = 0x41; // 20MHz clock to 19200 baud rate divider
-	UCA1BR0 = 0x03; //for 1.048Mhz
+	UCA1BR0 = 0x41; // 20MHz clock to 19200 baud rate divider
+	//UCA1BR0 = 0x03; //for 1.048Mhz
 	UCA1MCTL = UCBRF_6 + UCBRS1 + UCOS16; // calculate and confirm with table.
 
 	UCA1CTL1 	&= ~UCSWRST; 		//  configured. take state machine out of reset.

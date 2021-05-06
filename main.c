@@ -44,10 +44,10 @@ int main(void) {
 
     /*********Set clock frequency*********************************************/
     //unsigned char testPass = 1;
-//    ucsSelSource(1,1,1,1);
-//    oscFail = ucsDcoFreqSet (dcoFreq, 2, 1);			//set sclk to dcoFreq
-//    if (oscFail)
-//    	return 1;
+    ucsSelSource(1,1,1,1);
+    oscFail = ucsDcoFreqSet (dcoFreq, 2, 1);			//set sclk to dcoFreq
+    if (oscFail)
+    	return 1;
     /***End***Set clock frequency*********************************************/
 
     usciA0SpiInit(sclkDiv);
@@ -69,9 +69,8 @@ int main(void) {
     __enable_interrupt();      				// enable global device interrupts
 
     timerA0Init();
-    triWave(2.5,100,20);
 
-    triangularWaveDac();
+    sinWave(2.5,100,25);
 
     CMD dacCmds[MAX_CMDS]; //this is an array of vnh7070Cmds of type CMD
     initDacCmds(dacCmds);

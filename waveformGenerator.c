@@ -34,7 +34,7 @@ int triWave(double amp, double freq, int nSamples){
     volatile double timerSample,
                     nSamplesT,
                     deltaAmp;
-    //volatile double nSampleVoltage[150] = {};
+    volatile double nSampleVoltage[150] = {};
     volatile unsigned int nSampleByte[150] = {};
 
     if (amp > 2.5)
@@ -49,11 +49,11 @@ int triWave(double amp, double freq, int nSamples){
     TA0CCR0 =  (int)timerSample + 1;
 
     for (i = 0; i <= nSamples/2; ++i){
-        //nSampleVoltage[i] = deltaAmp * i;
+        nSampleVoltage[i] = deltaAmp * i;
         nSampleByte[i] = (deltaAmp * i * 4096)/V_REF;
     }
     for (i, j = 1; i < nSamples; ++i, ++j) {
-        //nSampleVoltage[i] = amp - (deltaAmp * j);
+        nSampleVoltage[i] = amp - (deltaAmp * j);
         nSampleByte[i] = ((amp - (deltaAmp * j)) * 4096)/V_REF;
     }
 
@@ -77,7 +77,7 @@ int sinWave(double amp, double freq, int nSamples){
     unsigned int dacCtrl = (~DAC_CFG_WR & ~DAC_CFG_BUF & (DAC_CFG_GA + DAC_CFG_SHDN)) & 0xF000;
     volatile int validSinWave = 1;
     //unsigned int byteAmp;
-    unsigned int i;
+    unsigned int i, j;
     volatile double timerSample,
                     nSamplesT,
                     deltaAmp;
@@ -89,14 +89,14 @@ int sinWave(double amp, double freq, int nSamples){
 
     nSamplesT = (1/(freq*nSamples));
 
-    deltaAmp = (amp/nSamples)*2;
+    //timerSample = nSamplesT / SMCLK_T;
 
-    timerSample = nSamplesT / SMCLK_T;
+    timerSample = (SMCLK_20_F / freq) / nSamples;
 
-    TA0CCR0 =  (int)timerSample + 1;
+    TA0CCR0 =  (int)timerSample - 1;
 
-    for (i = 0; i < nSamples; ++i){
-        nSampleVoltage[i] = amp*sin(2*PI*freq*nSamplesT);
+    for (i = 0, j = nSamples/2; i < nSamples; ++i, j--){
+        nSampleVoltage[i] = ((0.5)*amp*sin(2*PI*i*nSamplesT/(1/freq))+(0.5)*amp)/2;
         nSampleByte[i] = (nSampleVoltage[i] * 4096)/V_REF;
     }
 
@@ -105,7 +105,7 @@ int sinWave(double amp, double freq, int nSamples){
     TA0CTL |= TACLR | TAIE;
 
     while(1){
-        if (i > nSamples)
+        if (i >= nSamples)
             i = 0;
         if (sampleT){
             dacWriteWord(nSampleByte[i++], dacCtrl);
