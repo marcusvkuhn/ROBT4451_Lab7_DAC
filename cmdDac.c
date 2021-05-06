@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <mcp4921Dac.h>
 #include <ctype.h>
+#include <waveformGenerator.h>
 
 /************************************************************************************
 * Function: initDacCmds
@@ -127,10 +128,13 @@ int executeCMD(CMD* dacCmds, int cmdIndex){
     switch (cmdIndex) {
     case DACSET_IDX:
         dacSet(DAC_ARG[0], VREF, N_BITS);
+        break;
     case TRIWAVE_IDX:
         triWave(DAC_ARG[0], DAC_ARG[1], DAC_ARG[2]);
+        break;
     case SINWAVE_IDX:
         sinWave(DAC_ARG[0], DAC_ARG[1], DAC_ARG[2]);
+        break;
     default:
         break;
     }
